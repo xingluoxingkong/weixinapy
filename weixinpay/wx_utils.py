@@ -7,7 +7,8 @@ import base64
 import hmac
 import json
 
-__all__ = ['getRandomStr', 'createSign', 'decodeXML', 'encodeXML', 'post']
+__all__ = ['getRandomStr', 'createSign',
+           'decodeXML', 'encodeXML', 'post', 'getIp']
 
 _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789'
 
@@ -73,7 +74,7 @@ def decodeXML(data, rootName='xml'):
                     v = str(v)
             values[rootName][k] = v
     x = Dict2XML()
-    return x.parse(values).decode('utf-8')
+    return x.parse(values)
 
 
 def encodeXML(xmlStr, rootName='xml'):

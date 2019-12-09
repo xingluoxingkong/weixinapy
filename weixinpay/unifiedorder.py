@@ -1,4 +1,5 @@
 import json
+import time
 import logging
 import requests
 from .wx_utils import getRandomStr, createSign, decodeXML, encodeXML, post
@@ -148,12 +149,26 @@ class Unifiedorder(object):
             res1 = post(_URL, xmlStr)
             res2 = encodeXML(res1)
             if self._checkValues(res2):
-                return res2
+                return _reSign(res2)
             else:
                 _log.error('用户请求支付失败，返回结果：%s' % res2)
                 return '返回参数校验不通过或者请求失败!'
         else:
             return '参数不合法，请检查请求参数！'
+
+    def _reSign(self, res):
+        ''' 二次签名
+        --
+        '''
+        re = {}
+        re['appId'] = res['appid']
+        re['timeStamp'] = int(time.time())
+        re['package'] = 'prepay_id=' + res['prepay_id']
+        re['signType'] = self.sign_type
+        re['nonceStr'] = getRandomStr()
+        sign = createSign(re, self.key, self.sign_type)
+        re['paySign'] = sign
+        return re
 
     def _checkValues(self, values=None):
         ''' 检查参数是否合法
