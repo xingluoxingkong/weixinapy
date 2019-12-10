@@ -121,6 +121,9 @@ class Unifiedorder(object):
             @param time_start: 交易开始时间，非必填
             @param time_expire: 交易结束时间，非必填
             @param scene_info： 该字段常用于线下活动时的场景信息上报，支持上报实际门店信息，商户也可以按需求自己上报相关信息。该字段为JSON对象数据，对象格式为{"store_info":{"id": "门店ID","name": "名称","area_code": "编码","address": "地址" }}
+
+            @return 成功：微信返回的结果（后端保存支付结果用）, 二次签名（将此签名发给前端）
+            @return 失败：False, 失败原因
         '''
         if trade_type == 'JSAPI' and openid == '':
             raise Exception('trade_type=JSAPI，openid必传')
@@ -149,12 +152,12 @@ class Unifiedorder(object):
             res1 = post(_URL, xmlStr)
             res2 = encodeXML(res1)
             if self._checkValues(res2):
-                return _reSign(res2)
+                return res2, self._reSign(res2)
             else:
                 _log.error('用户请求支付失败，返回结果：%s' % res2)
-                return '返回参数校验不通过或者请求失败!'
+                return False, '返回参数校验不通过或者请求失败!'
         else:
-            return '参数不合法，请检查请求参数！'
+            return False, '参数不合法，请检查请求参数！'
 
     def _reSign(self, res):
         ''' 二次签名
@@ -162,7 +165,7 @@ class Unifiedorder(object):
         '''
         re = {}
         re['appId'] = res['appid']
-        re['timeStamp'] = int(time.time())
+        re['timeStamp'] = str(int(time.time()))
         re['package'] = 'prepay_id=' + res['prepay_id']
         re['signType'] = self.sign_type
         re['nonceStr'] = getRandomStr()

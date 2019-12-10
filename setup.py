@@ -12,7 +12,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="weixinpay",
-    version="0.0.1",
+    version="0.0.2",
     keywords=("pip", "pathtool", "timetool", "magetool", "mage"),
     description="微信支付",
     long_description="微信支付",
