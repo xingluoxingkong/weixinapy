@@ -117,16 +117,11 @@ class Refund(object):
                 else:
                     return False
         else:
-            if all(k in self.values for k in ('appid', 'mch_id', 'nonce_str', 'body', 'out_trade_no', 'total_fee', 'spbill_create_ip', 'notify_url', 'trade_type', 'sign')):
-                if self.values['trade_type'] == 'NATIVE':
-                    if 'product_id' in self.values:
-                        return True
-                    else:
-                        return False
-                if self.values['trade_type'] == 'JSAPI':
-                    if 'openid' in self.values:
-                        return True
-                    else:
-                        return False
+            if all(k in self.values for k in ('appid', 'mch_id', 'nonce_str', 'out_trade_no', 'total_fee', 'refund_fee', 'notify_url', 'sign')):
+                if 'transaction_id' in self.values or 'out_trade_no' in self.values:
+
+                    return True
+                else:
+                    return False
 
         return False
