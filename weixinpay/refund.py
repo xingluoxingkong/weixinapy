@@ -117,9 +117,8 @@ class Refund(object):
                 else:
                     return False
         else:
-            if all(k in self.values for k in ('appid', 'mch_id', 'nonce_str', 'out_trade_no', 'total_fee', 'refund_fee', 'notify_url', 'sign')):
+            if all(k in self.values for k in ('appid', 'mch_id', 'nonce_str', 'out_refund_no', 'total_fee', 'refund_fee', 'refund_desc', 'notify_url', 'sign')):
                 if 'transaction_id' in self.values or 'out_trade_no' in self.values:
-
                     return True
                 else:
                     return False
