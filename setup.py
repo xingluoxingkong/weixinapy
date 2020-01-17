@@ -18,7 +18,7 @@ setup(
     long_description="微信支付",
     license="MIT Licence",
 
-    url="https://github.com/l616769490/weixinapy",
+    url="https://github.com/xingluoxingkong/weixinapy",
     author="lijin",
     author_email="lijin@dingtalk.com",
 
