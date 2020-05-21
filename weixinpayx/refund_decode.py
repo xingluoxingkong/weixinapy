@@ -3,9 +3,9 @@ import hashlib
 from Crypto.Cipher import AES
 from .wx_utils import decodeXML
 
-__all__ = ['refundDecode']
+__all__ = ['RefundDecode']
 
-class refundDecode(object):
+class RefundDecode(object):
     def __init__(self, key):
         ''' 退款回调解密
         '''
