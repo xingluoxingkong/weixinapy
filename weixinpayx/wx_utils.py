@@ -38,7 +38,7 @@ def createSign(values, key, sign_type='MD5'):
     signStr = ''
     # 拼接
     for i in sortArr:
-        if i[1] != '':
+        if i[1]:
             signStr += str(i[0]) + '=' + str(i[1]) + '&'
 
     # 最后再拼上key
