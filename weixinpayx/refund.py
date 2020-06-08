@@ -1,7 +1,7 @@
 import json
 import logging
 import requests
-from .wx_utils import getRandomStr, createSign, decodeXML, encodeXML, post
+from .wx_utils import getRandomStr, createSign, decodeXML, encodeXML
 
 __all__ = ['Refund']
 
@@ -15,6 +15,8 @@ class Refund(object):
     def __init__(self, appid, mch_id, key):
         ''' 当交易发生之后一段时间内，由于买家或者卖家的原因需要退款时，卖家可以通过退款接口将支付款退还给买家，微信支付将在收到退款请求并且验证成功之后，按照退款规则将支付款按原路退到买家帐号上。
         --
+            注意，此接口需要证书
+            https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=4_3
             @param appid: 微信分配的小程序ID
             @param mch_id: 微信支付分配的商户号
             @param key: key设置路径：微信商户平台(pay.weixin.qq.com)-->账户设置-->API安全-->密钥设置
@@ -59,7 +61,7 @@ class Refund(object):
         self.values['refund_account'] = refund_account
         return self
 
-    def refund(self, out_refund_no, total_fee, refund_fee, transaction_id=None, out_trade_no=None, refund_desc='', notify_url=''):
+    def refund(self, out_refund_no, total_fee, refund_fee, transaction_id=None, out_trade_no=None, refund_desc='', notify_url='', cert = './cert.pem', key = './key.pem'):
         '''发起支付请求
         --
             @param out_refund_no: 商户退款单号
@@ -69,6 +71,7 @@ class Refund(object):
             @param out_trade_no: 商户订单号和transaction_id二选一
             @param refund_desc: 退款原因
             @param notify_url: 退款结果通知url
+            @param cert, key: 微信支付证书
         '''
         if not transaction_id and not out_trade_no:
             raise Exception('transaction_id和out_trade_no必须有一个')
@@ -91,7 +94,7 @@ class Refund(object):
         self.values['sign'] = sign
         if self._checkValues():
             xmlStr = decodeXML(self.values)
-            res1 = post(_URL, xmlStr)
+            res1 = self._post(_URL, xmlStr, cert, key)
             res2 = encodeXML(res1)
             if self._checkValues(res2):
                 return res2
@@ -100,6 +103,16 @@ class Refund(object):
                 return '返回参数校验不通过或者请求失败!'
         else:
             return '参数不合法，请检查请求参数！'
+    
+    def _post(self, url, data, cert, key):
+        ''' 发送post请求
+        --
+        '''
+        import requests
+        r = requests.post(url, data.encode('utf-8'), cert = (cert, key))
+        text = r.text.encode(r.encoding).decode('utf-8')
+        
+        return text
 
     def _checkValues(self, values=None):
         ''' 检查参数是否合法
